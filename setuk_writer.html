@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스포츠클럽 세특 작성기</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+:root{
+  --mint:#10B981; --mint-d:#059669; --mint-l:#D1FAE5; --mint-xl:#ECFDF5;
+  --bg:#F8FAFC; --ink:#0F172A; --ink2:#475569; --ink3:#94A3B8; --soft:#F1F5F9; --soft2:#E8EEF4;
+  --slate:#64748B; --amber:#F59E0B; --amber-d:#B45309; --amber-l:#FEF3C7; --rose:#E11D48; --rose-l:#FFE4E6;
+  --sh1:0 1px 2px rgba(15,23,42,.05),0 4px 16px rgba(15,23,42,.04);
+  --sh2:0 2px 4px rgba(15,23,42,.06),0 10px 28px rgba(15,23,42,.08);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;background:var(--bg);color:var(--ink);line-height:1.6;font-size:15px;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid rgba(16,185,129,.45);outline-offset:2px}
+
+/* 헤더 */
+header{position:sticky;top:0;z-index:20;background:rgba(248,250,252,.92);backdrop-filter:blur(10px);box-shadow:0 1px 0 rgba(15,23,42,.05)}
+.hwrap{max-width:1040px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;margin-right:auto}
+.brand svg{flex:none}
+.brand h1{font-size:19px;font-weight:800;letter-spacing:-.02em}
+.brand p{font-size:12.5px;color:var(--ink2)}
+nav{display:flex;gap:6px;background:var(--soft2);padding:5px;border-radius:16px}
+nav button{padding:8px 16px;border-radius:12px;font-weight:600;color:var(--ink2);transition:all .2s}
+nav button:hover{color:var(--ink)}
+nav button.on{background:#fff;color:var(--mint-d);box-shadow:var(--sh1)}
+nav button:active{transform:scale(.95)}
+
+main{max-width:1040px;margin:0 auto;padding:28px 24px 140px}
+h2{font-size:18px;font-weight:700;letter-spacing:-.01em;margin-bottom:16px}
+h3{font-size:15px;font-weight:700;margin-bottom:8px}
+.sub{color:var(--ink2);font-size:13.5px}
+
+/* 카드 */
+.card{background:#fff;border-radius:16px;box-shadow:var(--sh1);padding:28px;margin-bottom:20px}
+.field{display:flex;gap:16px;align-items:flex-start;margin-bottom:16px}
+.field:last-child{margin-bottom:0}
+.flabel{width:44px;flex:none;padding-top:8px;font-weight:600;color:var(--ink2);font-size:13.5px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.cbtn{padding:8px 16px;border-radius:12px;background:var(--soft);font-weight:600;color:var(--ink2);transition:all .2s}
+.cbtn:hover{transform:translateY(-2px);background:var(--soft2)}
+.cbtn:active{transform:scale(.95)}
+.cbtn.on{background:var(--mint);color:#fff}
+.cbtn.on:hover{background:var(--mint-d)}
+
+/* 버튼 */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:12px;background:var(--soft);color:#334155;font-weight:600;transition:all .2s duration .2s}
+.btn{transition:all .2s}
+.btn:hover{transform:translateY(-2px);background:var(--soft2);box-shadow:var(--sh1)}
+.btn:active{transform:scale(.95)}
+.btn.primary{background:var(--mint);color:#fff}
+.btn.primary:hover{background:var(--mint-d)}
+.btn.ghost{background:transparent}
+.btn.danger{color:var(--rose);background:var(--rose-l)}
+.btn.sm{padding:6px 12px;font-size:13px;border-radius:10px}
+.btnrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+
+/* 번호판 */
+.numtools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.numgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:8px}
+.num{position:relative;height:48px;border-radius:14px;background:var(--soft);font-weight:700;color:var(--ink2);transition:all .2s}
+.num:hover{transform:translateY(-2px);background:var(--soft2)}
+.num:active{transform:scale(.95)}
+.num.on{background:var(--mint);color:#fff;box-shadow:0 4px 12px rgba(16,185,129,.35)}
+.num.done::after{content:'';position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--amber)}
+.num.on.done::after{background:#fff}
+
+/* 수준 매트릭스 */
+.mgroup{font-size:12.5px;font-weight:700;color:var(--mint-d);margin:16px 0 4px}
+.mgroup:first-child{margin-top:0}
+.mrow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-radius:12px}
+.mrow:nth-child(even){background:var(--soft)}
+.mname{font-weight:600}
+.lv{display:flex;gap:6px;flex:none}
+.lvbtn{width:44px;height:34px;border-radius:10px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--soft2);color:var(--ink3);font-weight:700;transition:all .2s}
+.mrow:nth-child(even) .lvbtn{background:#fff}
+.lvbtn:hover{transform:translateY(-2px)}
+.lvbtn:active{transform:scale(.92)}
+.lvbtn.on.la{background:var(--mint);color:#fff;box-shadow:none}
+.lvbtn.on.lb{background:var(--slate);color:#fff;box-shadow:none}
+.lvbtn.on.lc{background:var(--amber);color:#fff;box-shadow:none}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2);margin-top:12px}
+
+/* 학생 카드 */
+.scard{background:#fff;border-radius:16px;box-shadow:var(--sh1);padding:24px;margin-bottom:16px;transition:box-shadow .2s}
+.scard:hover{box-shadow:var(--sh2)}
+.shead{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.snum{width:44px;height:44px;border-radius:14px;background:var(--mint-xl);color:var(--mint-d);display:grid;place-items:center;font-weight:800;font-size:17px;flex:none}
+.sname{font-weight:700;font-size:16px}
+.schips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.chip{font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--soft);color:var(--ink2)}
+.chip.la{background:var(--mint-l);color:var(--mint-d)}
+.chip.lb{background:var(--soft2);color:#334155}
+.chip.lc{background:var(--amber-l);color:var(--amber-d)}
+.sgrow{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+.panel{background:var(--bg);border-radius:16px;padding:20px;margin-top:16px}
+.panel .mrow:nth-child(even){background:#fff}
+.inp{width:100%;background:var(--soft);border:0;border-radius:12px;padding:10px 14px;transition:all .2s}
+.inp:focus{outline:none;background:#fff;box-shadow:0 0 0 3px rgba(16,185,129,.35)}
+textarea.inp{resize:vertical;line-height:1.7}
+.out{margin-top:16px;min-height:120px}
+.meta{margin-top:10px}
+.bar{height:8px;border-radius:99px;background:var(--soft2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--mint);border-radius:99px;transition:width .3s}
+.bar.over i{background:var(--rose)}
+.metatxt{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;color:var(--ink2);margin-top:6px;flex-wrap:wrap}
+.issues{list-style:none;margin-top:8px;display:grid;gap:6px}
+.issues li{font-size:13px;padding:8px 12px;border-radius:10px;background:var(--amber-l);color:var(--amber-d)}
+.issues li.bad{background:var(--rose-l);color:var(--rose)}
+.okmsg{font-size:13px;color:var(--mint-d);margin-top:8px;font-weight:600}
+.actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+
+/* 하단 도크 */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:14px 24px calc(14px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.94);backdrop-filter:blur(10px);box-shadow:0 -4px 20px rgba(15,23,42,.07)}
+.dock .in{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap}
+.dock .btn{padding:12px 24px;font-size:15px}
+
+/* 폼 */
+.formrow{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end}
+.formrow label{display:grid;gap:6px;font-size:13px;font-weight:600;color:var(--ink2)}
+.formrow .inp{width:120px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+label.blk{display:grid;gap:6px;font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:14px}
+details{background:var(--bg);border-radius:16px;margin-bottom:12px;overflow:hidden}
+details>summary{list-style:none;padding:16px 20px;cursor:pointer;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:12px;transition:background .2s}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:'+';font-size:20px;color:var(--ink3);font-weight:500}
+details[open]>summary::after{content:'−'}
+details>summary:hover{background:var(--soft)}
+details .dbody{padding:4px 20px 20px}
+.hint{font-size:12.5px;color:var(--ink2);margin-top:4px}
+.hint code,.code{background:var(--soft2);padding:1px 6px;border-radius:6px;font-size:12px}
+.empty-hint{color:var(--amber-d);font-size:12.5px;font-weight:600}
+
+/* 빈 화면 */
+.empty{text-align:center;padding:56px 24px;background:#fff;border-radius:16px;box-shadow:var(--sh1);margin-bottom:20px}
+.empty svg{margin-bottom:12px}
+.empty h3{font-size:17px;margin-bottom:6px}
+.empty p{color:var(--ink2);margin-bottom:18px;max-width:420px;margin-left:auto;margin-right:auto}
+.empty.small{padding:36px 24px;box-shadow:none;background:transparent;border-radius:16px;outline:2px dashed var(--soft2);outline-offset:-2px}
+
+/* 결과 */
+.rrow{background:#fff;border-radius:16px;box-shadow:var(--sh1);padding:22px 24px;margin-bottom:14px}
+.rhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.rtag{font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--mint-xl);color:var(--mint-d)}
+.rtext{white-space:pre-wrap;line-height:1.85;color:#1E293B}
+.pair{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0}
+.pair+.pair{box-shadow:0 -1px 0 var(--soft2)}
+.pair b{color:var(--rose)}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.toolbar select{width:auto;min-width:130px}
+
+/* 스켈레톤 */
+.skel{display:grid;gap:14px}
+.sk{height:16px;border-radius:8px;background:linear-gradient(90deg,var(--soft) 25%,var(--soft2) 37%,var(--soft) 63%);background-size:400% 100%;animation:shim 1.3s ease infinite}
+.sk.h{height:44px;border-radius:14px}
+.w40{width:40%}.w60{width:60%}.w80{width:80%}
+@keyframes shim{0%{background-position:100% 50%}100%{background-position:0 50%}}
+
+/* 토스트/모달 */
+#toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);background:#0F172A;color:#fff;padding:12px 20px;border-radius:14px;box-shadow:var(--sh2);opacity:0;pointer-events:none;transition:all .25s;z-index:60;font-weight:600;font-size:14px}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);display:grid;place-items:center;z-index:70;padding:24px}
+.modal{background:#fff;border-radius:20px;box-shadow:var(--sh2);padding:28px;max-width:420px;width:100%}
+.modal p{margin-bottom:20px;line-height:1.7}
+.modal .btnrow{justify-content:flex-end;margin-top:0}
+.banner{background:var(--amber-l);color:var(--amber-d);padding:14px 18px;border-radius:14px;margin-bottom:20px;font-weight:600;font-size:13.5px}
+.note{background:var(--mint-xl);color:#065F46;padding:14px 18px;border-radius:14px;font-size:13.5px;margin-bottom:20px}
+
+@media (max-width:720px){
+  .hwrap{padding:12px 16px}
+  main{padding:20px 16px 150px}
+  .card{padding:20px}
+  .field{flex-direction:column;gap:8px}
+  .flabel{padding-top:0;width:auto}
+  .two,.three{grid-template-columns:1fr}
+  nav{width:100%}
+  nav button{flex:1;padding:8px 6px;font-size:13.5px}
+  .sgrow{margin-left:0;width:100%}
+  .dock{padding-left:16px;padding-right:16px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{header,.dock,#toast{display:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hwrap">
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="18" fill="#10B981"/><path d="M25 42 L17 16 Q32 9 47 16 L39 42 Z" fill="#fff" opacity=".95"/><path d="M25 42 L17 16 M32 42 L32 12 M39 42 L47 16" stroke="#10B981" stroke-width="2" stroke-linecap="round" fill="none"/><ellipse cx="32" cy="48" rx="8" ry="6" fill="#fff"/></svg>
+      <div><h1>스포츠클럽 세특 작성기</h1><p>관찰행동을 고르면 세특 초안을 만들어 드려요</p></div>
+    </div>
+    <nav id="tabs" aria-label="메뉴"></nav>
+  </div>
+</header>
+<main id="app"></main>
+<div id="dockhost"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- 기본 상수 ---------- */
+const LEVELS=['상','중','하'];
+const LV_CLS={'상':'la','중':'lb','하':'lc'};
+const KEY='setuk_writer_v1';
+const $=(s,r)=>(r||document).querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+/* ---------- 초기 데이터 ---------- */
+function seed(){
+return {
+  classes:[],
+  sports:[
+    {id:'badminton',name:'배드민턴',behaviors:[
+      {id:'bd_stroke',name:'기본 타법',scene:'배드민턴 기본 타법 익히기 활동',acts:{
+        '상':['올바른 그립과 스윙 자세로 셔틀콕을 원하는 위치까지 정확하게 보냄','클리어와 드롭샷의 차이를 이해하고 상황에 맞게 구분하여 구사함','타점과 팔로스루를 스스로 점검하며 안정적인 타법을 완성해 감'],
+        '중':['기본 그립과 스윙 동작을 익혀 셔틀콕을 꾸준히 넘김','클리어와 드롭샷의 동작 원리를 이해하고 연습함','교사의 시범과 피드백을 바탕으로 타법 자세를 조금씩 다듬어 감'],
+        '하':['셔틀콕을 맞히는 타이밍을 익히기 위해 반복하여 연습함','그립과 스윙 동작을 친구의 도움을 받아 차근차근 익혀 감','타법이 익숙하지 않은 상황에서도 포기하지 않고 끝까지 시도함']}},
+      {id:'bd_smash',name:'스매시·공격',scene:'배드민턴 공격 기술 연습 활동',acts:{
+        '상':['체중 이동과 손목 스냅을 활용하여 힘 있는 스매시를 구사함','상대의 위치를 파악하여 빈 공간으로 공격 방향을 조절함','공격 이후에도 다음 동작을 위한 준비 자세를 빠르게 갖춤'],
+        '중':['스매시 동작의 순서를 이해하고 안정적으로 따라 함','올바른 타점에서 셔틀콕을 강하게 타격하려고 노력함','친구와 짝을 이루어 공격 연습을 반복하며 타이밍을 익혀 감'],
+        '하':['공격 동작의 기본 자세를 익히며 조금씩 셔틀콕에 힘을 실어 봄','스매시가 어렵게 느껴지는 순간에도 여러 번 시도하며 감각을 키워 감','교사의 시범을 유심히 관찰하고 동작을 따라 해 보려고 노력함']}},
+      {id:'bd_serve',name:'서브·리시브',scene:'배드민턴 서브와 리시브 연습 활동',acts:{
+        '상':['서브 규칙을 정확히 이해하고 낮고 안정적인 서브를 넣음','상대 서브의 방향과 속도를 예측하여 침착하게 리시브함','서브의 위치와 방향을 다양하게 바꾸며 경기 흐름을 주도함'],
+        '중':['서브 자세와 규칙을 익혀 안정적으로 서브를 넣음','리시브 준비 자세를 갖추고 셔틀콕의 방향에 맞추어 반응함','서브 성공률을 높이기 위한 반복 연습에 성실하게 참여함'],
+        '하':['서브 동작을 차근차근 익히며 셔틀콕을 넘기는 횟수를 늘려 감','리시브가 낯설었으나 준비 자세를 스스로 떠올리며 반응하려고 노력함','서브 규칙을 친구에게 묻고 확인하며 올바른 방법을 익혀 감']}},
+      {id:'bd_foot',name:'풋워크·이동',scene:'배드민턴 풋워크 훈련 활동',acts:{
+        '상':['코트 중앙으로 재빠르게 복귀하며 안정적인 풋워크를 유지함','셔틀콕의 낙하 지점을 빠르게 판단하여 효율적인 스텝으로 이동함','체력과 민첩성이 필요한 훈련도 자세를 흐트러뜨리지 않고 끝까지 수행함'],
+        '중':['기본 스텝을 익혀 앞뒤와 좌우로 안정적으로 이동함','셔틀콕을 보며 움직이는 방법을 이해하고 연습에 성실히 참여함','훈련 중 호흡과 속도를 조절하며 꾸준히 활동을 이어 감'],
+        '하':['코트 이동이 어렵게 느껴졌으나 스텝을 천천히 반복하며 익혀 감','이동 후 준비 자세로 돌아오는 동작을 의식하며 연습함','체력적으로 힘든 순간에도 잠시 숨을 고르고 다시 도전함']}},
+      {id:'bd_game',name:'경기 운영·복식',scene:'배드민턴 단식 및 복식 경기 활동',acts:{
+        '상':['경기 규칙과 점수 계산 방법을 정확히 알고 심판 역할까지 책임감 있게 수행함','복식 경기에서 파트너와 역할을 나누어 빈 공간을 효율적으로 방어함','경기 상황에 맞추어 전략을 스스로 수정하며 유연하게 대처함'],
+        '중':['경기 규칙을 이해하고 점수 기록과 서브 순서를 잘 지킴','복식 경기에서 파트너와 소통하며 자신의 위치를 지키려고 노력함','경기 결과에 관계없이 끝까지 성실하게 게임에 참여함'],
+        '하':['경기 규칙을 익혀 가며 게임 흐름을 이해하려고 노력함','복식 경기에서 파트너의 도움을 받아 자신의 역할을 조금씩 배워 감','실수가 있어도 다음 랠리에 집중하며 경기를 이어 감']}}
+    ]},
+    {id:'basketball',name:'농구',behaviors:[
+      {id:'bk_dribble',name:'드리블·패스',scene:'농구 드리블과 패스 연습 활동',acts:{
+        '상':['시선을 들고 양손으로 안정적인 드리블을 이어 가며 수비를 피함','동료의 움직임을 보고 정확한 타이밍에 패스를 연결함'],
+        '중':['드리블과 체스트 패스의 기본 동작을 익혀 안정적으로 수행함','짝과 패스를 주고받으며 공의 속도와 방향을 조절하는 방법을 익혀 감'],
+        '하':['공을 다루는 감각을 기르기 위해 제자리 드리블부터 차근차근 연습함','패스가 어려운 상황에서도 친구와 호흡을 맞추려고 노력함']}},
+      {id:'bk_shoot',name:'슛·리바운드',scene:'농구 슛과 리바운드 연습 활동',acts:{
+        '상':['올바른 슛 자세를 바탕으로 다양한 위치에서 안정적으로 슛을 시도함','공의 궤적을 예측하여 리바운드 위치를 선점함'],
+        '중':['슛 자세의 기본 원리를 이해하고 꾸준히 반복하여 연습함','리바운드 상황에서 몸의 균형을 유지하며 공을 잡으려고 노력함'],
+        '하':['슛 동작을 여러 번 시도하며 손목 사용과 조준 감각을 익혀 감','공을 잡는 타이밍이 어려웠으나 반복 연습으로 조금씩 익숙해짐']}}
+    ]}
+  ],
+  common:[
+    {id:'cm_attitude',name:'참여 태도',scene:'{종목} 활동',acts:{
+      '상':['시작 전 스스로 준비운동과 용구 정비에 나서는 등 활동에 적극적으로 임함','활동 시간 내내 높은 집중력과 열정을 유지함','자신의 목표를 세우고 성실하게 실천함'],
+      '중':['정해진 활동에 꾸준히 참여하며 성실한 태도를 보임','교사의 안내를 잘 듣고 활동 순서에 맞게 행동함','활동에 대한 흥미를 바탕으로 즐겁게 참여함'],
+      '하':['활동에 참여하며 종목에 대한 흥미를 조금씩 키워 감','낯선 활동에도 용기를 내어 참여해 보려고 노력함','익숙하지 않은 상황에서도 끝까지 자리를 지키며 참여함']}},
+    {id:'cm_coop',name:'협력·배려',scene:'{종목} 팀 활동',acts:{
+      '상':['동료의 실수를 격려하며 긍정적인 분위기를 이끌어 감','서로 다른 실력의 친구들과 눈높이를 맞추어 함께 연습함','친구의 연습을 돕고 조언을 나누며 함께 성장하는 모습을 보임'],
+      '중':['짝이나 모둠원과 협력하여 맡은 역할을 성실히 수행함','친구의 의견을 존중하며 활동 규칙을 함께 정함','함께하는 친구를 배려하며 즐겁게 활동함'],
+      '하':['친구와 짝을 이루어 활동하며 서로 돕는 방법을 익혀 감','자신의 역할을 맡아 끝까지 해내려고 노력함','친구의 도움에 고마움을 표현하며 함께 활동함']}},
+    {id:'cm_safety',name:'규칙·안전',scene:'{종목} 활동',acts:{
+      '상':['안전 수칙과 경기 규칙을 스스로 지키고 친구들에게도 상기시켜 줌','용구를 바르게 다루고 활동 공간의 안전을 세심하게 살핌','판정 상황에서도 공정한 태도로 결과를 받아들임'],
+      '중':['안전 수칙과 활동 규칙을 잘 지키며 참여함','준비운동과 정리운동을 빠짐없이 성실하게 수행함','용구를 정해진 방법에 맞게 사용하고 정리함'],
+      '하':['안전 수칙을 확인하며 규칙에 맞게 행동하려고 노력함','활동 후 용구를 정리하는 습관을 조금씩 길러 감','규칙을 잘 이해하기 위해 질문하고 확인하는 모습을 보임']}},
+    {id:'cm_growth',name:'성장·도전',scene:'{종목} 활동',acts:{
+      '상':['처음보다 눈에 띄게 향상된 기량을 바탕으로 새로운 기술에도 자신 있게 도전함','부족한 부분을 스스로 찾아 연습 계획을 세우고 실천함','성취 경험을 친구들과 나누며 활동의 즐거움을 확산시킴'],
+      '중':['연습을 거듭하며 기량이 꾸준히 향상되는 모습을 보임','실수를 통해 배우며 다음 시도에서 개선하려고 노력함','스스로 정한 작은 목표를 달성하며 자신감을 키워 감'],
+      '하':['어려운 기술 앞에서도 포기하지 않고 여러 번 도전함','이전보다 나아진 점을 스스로 발견하며 성취감을 느낌','꾸준한 연습으로 조금씩 기량이 향상됨']}}
+  ],
+  connectors:['또한','아울러','이와 함께','더불어'],
+  closers:{
+    '상':['활동 전반에서 성실함과 자신감이 돋보이며 친구들에게 좋은 본보기가 됨.','종목에 대한 이해와 흥미가 깊어져 앞으로의 성장이 더욱 기대됨.','스스로 목표를 세우고 도전하는 태도가 활동 내내 빛남.'],
+    '중':['활동에 꾸준히 참여하며 종목에 대한 이해를 넓혀 감.','성실하게 참여하는 모습이 인상적이며 앞으로의 발전이 기대됨.','안정적인 참여 태도로 활동의 즐거움을 알아 감.'],
+    '하':['처음에는 어려움을 느꼈으나 반복 연습을 통해 조금씩 자신감을 키워 감.','끝까지 포기하지 않고 도전하는 태도가 성장의 밑거름이 됨.','꾸준한 노력으로 발전 가능성이 충분히 기대됨.']
+  },
+  templates:[
+    '{장면}에서 {A연결} {B}.',
+    '{장면}에서 {A고} {B}.',
+    '{장면} 중 {A연결} {B}.',
+    '{장면}에서 {A}.'
+  ],
+  forbidden:['학원','레슨','과외','사교육','대회 입상','수상','금메달','은메달','동메달','1등','최고','최우수','전국','국가대표','선수 출신','부모','아버지','어머니'],
+  typos:['됬=됐','몇일=며칠','안되=안 되','않되=안 되','할수=할 수','금새=금세','어떻해=어떡해','왠만=웬만'],
+  settings:{limitBytes:1500,subject:'omit',simThreshold:0.55,includeCloser:true},
+  drafts:{},
+  ui:{tab:'write',sportId:'badminton',grade:null,cls:null,selected:[],bulk:{},open:null,dbSport:'badminton',rGrade:'all',rSport:'all'}
+};}
+
+/* ---------- 저장/불러오기 ---------- */
+let storageOK=true;
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    if(!raw) return null;
+    const s=JSON.parse(raw), d=seed();
+    Object.keys(d).forEach(k=>{ if(s[k]===undefined) s[k]=d[k]; });
+    s.settings=Object.assign({},d.settings,s.settings);
+    s.ui=Object.assign({},d.ui,s.ui);
+    return s;
+  }catch(e){ storageOK=false; return null; }
+}
+let S=load()||seed();
+let saveTimer=null;
+function save(){
+  try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){ storageOK=false; }
+}
+function saveSoon(){ clearTimeout(saveTimer); saveTimer=setTimeout(save,400); }
+
+/* ---------- 한글 유틸 ---------- */
+function hasJong(w){
+  const c=String(w).trim().slice(-1).charCodeAt(0);
+  if(c<0xAC00||c>0xD7A3) return false;
+  return (c-0xAC00)%28!==0;
+}
+function eunNeun(w){ return w+(hasJong(w)?'은':'는'); }
+/* '~함/~보임/~있음' 형태(명사형)를 연결형(~하며, ~보이며, ~있으며)으로 바꿈 */
+function toConn(s,kind){
+  s=String(s).trim().replace(/[.。]$/,'');
+  const last=s.slice(-1), code=last.charCodeAt(0);
+  const suf=kind==='고'?'고':'며';
+  if(code>=0xAC00&&code<=0xD7A3&&(code-0xAC00)%28===16){
+    const base=String.fromCharCode(code-16), head=s.slice(0,-1);
+    if(base==='으') return head+(kind==='고'?'고':'으며');
+    return head+base+suf;
+  }
+  return s+(kind==='고'?'고':'으며');
+}
+function neisBytes(s){
+  let b=0;
+  for(const ch of String(s)){
+    if(ch==='\n') b+=2;
+    else if(ch.charCodeAt(0)<128) b+=1;
+    else b+=3;
+  }
+  return b;
+}
+const lines=v=>String(v).split('\n').map(x=>x.trim()).filter(Boolean);
+
+/* ---------- 난수/조합 엔진 ---------- */
+function rng(seedNum){
+  let a=seedNum>>>0;
+  return function(){
+    a|=0; a=a+0x6D2B79F5|0;
+    let t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;
+    return ((t^t>>>14)>>>0)/4294967296;
+  };
+}
+function pick(r,arr){ return arr[Math.floor(r()*arr.length)]; }
+function shuffle(r,arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(r()*(i+1)); const t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+function getSport(id){ return S.sports.find(s=>s.id===id); }
+function findBehavior(sport,bid){
+  return (sport&&sport.behaviors.find(b=>b.id===bid))||S.common.find(b=>b.id===bid);
+}
+function composeSentence(b,sportName,level,r){
+  const fill=t=>String(t).replace(/\{종목\}/g,sportName);
+  const pool=(b.acts&&b.acts[level]||[]).map(fill).filter(Boolean);
+  if(!pool.length) return null;
+  const acts=shuffle(r,pool);
+  let A=acts[0], B=acts[1]||null;
+  const all=(S.templates&&S.templates.length)?S.templates:['{장면}에서 {A}.'];
+  let tpls=all.filter(t=>B||!/\{B\}/.test(t));
+  if(!tpls.length) tpls=['{장면}에서 {A}.'];
+  const tpl=pick(r,tpls);
+  /* 연결형으로 바꿀 표현에 이미 "~하며 ~하고"가 들어 있으면 문장이 늘어지므로 피함 */
+  if(/\{A(연결|고)\}/.test(tpl)){
+    const c=acts.find(a=>!/[며고]\s/.test(a));
+    if(c){ A=c; B=acts.find(a=>a!==A)||null; }
+  }
+  return tpl
+    .replace(/\{장면\}/g,fill(b.scene||'활동'))
+    .replace(/\{A연결\}/g,toConn(A,'며'))
+    .replace(/\{A고\}/g,toConn(A,'고'))
+    .replace(/\{A\}/g,A)
+    .replace(/\{B\}/g,B||'');
+}
+function compose(sport,d,name,seedNum){
+  const r=rng(seedNum);
+  const conns=shuffle(r,(S.connectors&&S.connectors.length)?S.connectors:['또한']);
+  const order=Object.keys(d.sel||{});
+  const bs=order.map(id=>({b:findBehavior(sport,id),lv:d.sel[id]})).filter(x=>x.b);
+  const out=[];
+  bs.forEach(x=>{
+    let s=composeSentence(x.b,sport.name,x.lv,r);
+    if(!s) return;
+    if(out.length>0) s=conns[(out.length-1)%conns.length]+' '+s;
+    out.push(s);
+  });
+  if(!out.length) return '';
+  if(S.settings.subject==='name'&&name) out[0]=eunNeun(name)+' '+out[0];
+  if(S.settings.includeCloser){
+    const lvs=bs.map(x=>x.lv);
+    const cnt={'상':0,'중':0,'하':0}; lvs.forEach(l=>cnt[l]++);
+    const main=['중','상','하'].sort((a,b)=>cnt[b]-cnt[a])[0];
+    const pool=(S.closers&&S.closers[main])||[];
+    if(pool.length) out.push(pick(r,pool));
+  }
+  const memo=(d.memo||'').trim();
+  if(memo) out.push(/[.!?]$/.test(memo)?memo:memo+'.');
+  return out.join(' ');
+}
+
+/* ---------- 점검 ---------- */
+const COMPARE=[/보다\s*(뛰어|우수|앞서|잘)/,/(다른|타)\s*(학생|친구)들?\s*(보다|에 비해)/,/(반|학년|학교)\s*(에서\s*)?(최고|1위|일등)/];
+function grams(s){
+  const t=String(s).replace(/[\s.,]/g,'');
+  const g=new Set();
+  for(let i=0;i<t.length-2;i++) g.add(t.substr(i,3));
+  return g;
+}
+function similarity(a,b){
+  const A=grams(a),B=grams(b);
+  if(!A.size||!B.size) return 0;
+  let inter=0; A.forEach(x=>{ if(B.has(x)) inter++; });
+  return inter/(A.size+B.size-inter);
+}
+function repetition(text,sportName){
+  const out=[];
+  const stop=new Set([sportName,'활동에서','활동','활동을','활동에']);
+  const toks=text.replace(/[.,]/g,' ').split(/\s+/).filter(w=>w.length>=3&&!stop.has(w));
+  const cnt={}; toks.forEach(w=>{ cnt[w]=(cnt[w]||0)+1; });
+  Object.keys(cnt).forEach(w=>{ if(cnt[w]>=3) out.push('"'+w+'"이(가) '+cnt[w]+'번 반복돼요'); });
+  const ends=text.split(/\.\s*/).map(s=>s.trim().split(/\s+/).pop()).filter(Boolean);
+  const ec={}; ends.forEach(w=>{ ec[w]=(ec[w]||0)+1; });
+  Object.keys(ec).forEach(w=>{ if(ec[w]>=2) out.push('문장 끝 "'+w+'"이(가) '+ec[w]+'번 반복돼요'); });
+  return out;
+}
+function groupOf(key){ return key.slice(0,key.lastIndexOf('|')); }
+function parseKey(key){
+  const p=key.split('|');
+  return {sid:p[0],grade:+p[1],cls:+p[2],num:+p[3]};
+}
+function dkey(sid,cl,n){ return sid+'|'+cl.grade+'|'+cl.cls+'|'+n; }
+function othersOf(key){
+  const g=groupOf(key);
+  return Object.keys(S.drafts).filter(k=>k!==key&&S.drafts[k].text&&groupOf(k)===g);
+}
+function checkText(key){
+  const d=S.drafts[key]; if(!d||!d.text) return [];
+  const t=d.text, p=parseKey(key), sp=getSport(p.sid);
+  const out=[];
+  const bytes=neisBytes(t), lim=S.settings.limitBytes;
+  if(bytes>lim) out.push({bad:true,msg:'제한보다 '+(bytes-lim)+'바이트 넘었어요'});
+  (S.forbidden||[]).forEach(w=>{ if(w&&t.includes(w)) out.push({bad:true,msg:'기재에 주의가 필요한 표현이 있어요: '+w}); });
+  COMPARE.forEach(re=>{ if(re.test(t)) out.push({bad:true,msg:'다른 학생과 비교하는 표현이 있는지 확인해 주세요'}); });
+  (S.typos||[]).forEach(line=>{
+    const i=line.indexOf('='); if(i<1) return;
+    const bad=line.slice(0,i), good=line.slice(i+1);
+    if(t.includes(bad)) out.push({msg:'맞춤법 확인: "'+bad+'" → "'+good+'"'});
+  });
+  if(/ {2,}/.test(t)) out.push({msg:'띄어쓰기가 두 번 연속된 곳이 있어요'});
+  repetition(t,sp?sp.name:'').forEach(m=>out.push({msg:m}));
+  let worst=0, who=0;
+  othersOf(key).forEach(k=>{
+    const s=similarity(t,S.drafts[k].text);
+    if(s>worst){ worst=s; who=parseKey(k).num; }
+  });
+  if(worst>=S.settings.simThreshold) out.push({msg:'같은 반 '+who+'번 학생 문장과 '+Math.round(worst*100)+'% 비슷해요'});
+  return out;
+}
+function generate(key){
+  const p=parseKey(key), sport=getSport(p.sid), d=S.drafts[key];
+  if(!sport||!d||!Object.keys(d.sel||{}).length) return false;
+  const cl=S.classes.find(c=>c.grade===p.grade&&c.cls===p.cls);
+  const name=(cl&&cl.names&&cl.names[p.num])||'';
+  const others=othersOf(key).map(k=>S.drafts[k].text);
+  const lim=S.settings.limitBytes, thr=S.settings.simThreshold;
+  let best=null;
+  for(let i=0;i<40;i++){
+    const sd=Math.floor(Math.random()*4e9);
+    const text=compose(sport,d,name,sd);
+    if(!text) return false;
+    const bytes=neisBytes(text);
+    let mx=0; others.forEach(o=>{ const s=similarity(text,o); if(s>mx) mx=s; });
+    const chain=text.split(/\.\s*/).filter(s=>(s.match(/[며고]\s/g)||[]).length>=3).length;
+    const score=chain*0.6+repetition(text,sport.name).length*0.5+Math.max(0,mx-thr)*5+(bytes>lim?10+(bytes-lim)/100:0)+mx*0.3;
+    if(!best||score<best.score) best={text,seed:sd,score};
+    if(score<0.35) break;
+  }
+  d.text=best.text; d.seed=best.seed; d.edited=false;
+  return true;
+}
+
+/* ---------- 화면 조각 ---------- */
+const SHUTTLE='<svg width="72" height="72" viewBox="0 0 64 64" aria-hidden="true"><path d="M24 42 L15 14 Q32 6 49 14 L40 42 Z" fill="#D1FAE5"/><path d="M24 42 L15 14 M32 42 L32 9 M40 42 L49 14" stroke="#10B981" stroke-width="2.2" stroke-linecap="round" fill="none"/><ellipse cx="32" cy="49" rx="9" ry="7" fill="#10B981"/></svg>';
+function emptyBlock(title,msg,btn,small){
+  return '<div class="empty'+(small?' small':'')+'">'+SHUTTLE+'<h3>'+title+'</h3><p>'+msg+'</p>'+(btn||'')+'</div>';
+}
+function skeleton(){
+  const one='<div class="card skel"><div class="sk h w40"></div><div class="sk w80"></div><div class="sk w60"></div></div>';
+  return one+one+one;
+}
+function chip(label,on,act,data){
+  return '<button class="cbtn'+(on?' on':'')+'" data-act="'+act+'" '+(data||'')+'>'+esc(label)+'</button>';
+}
+function curClass(){ return S.classes.find(c=>c.grade===S.ui.grade&&c.cls===S.ui.cls); }
+function ensureUI(){
+  const u=S.ui;
+  if(!getSport(u.sportId)&&S.sports.length) u.sportId=S.sports[0].id;
+  if(S.classes.length){
+    if(!S.classes.some(c=>c.grade===u.grade)) u.grade=S.classes.slice().sort((a,b)=>a.grade-b.grade||a.cls-b.cls)[0].grade;
+    if(!S.classes.some(c=>c.grade===u.grade&&c.cls===u.cls)){
+      const f=S.classes.filter(c=>c.grade===u.grade).sort((a,b)=>a.cls-b.cls)[0];
+      u.cls=f.cls; u.selected=[]; u.open=null;
+    }
+  }
+}
+function matrix(sport,selMap,scope){
+  const groups=[['종목 기술',sport?sport.behaviors:[]],['공통 태도',S.common]];
+  return groups.map(g=>{
+    if(!g[1].length) return '';
+    return '<div class="mgroup">'+g[0]+'</div>'+g[1].map(b=>{
+      const noActs=!LEVELS.some(l=>(b.acts&&b.acts[l]||[]).length);
+      return '<div class="mrow"><div class="mname">'+esc(b.name)+(noActs?' <span class="empty-hint">문장 없음</span>':'')+'</div><div class="lv">'+
+        LEVELS.map(l=>'<button class="lvbtn '+LV_CLS[l]+(selMap[b.id]===l?' on':'')+'" data-act="setLevel" data-scope="'+esc(scope)+'" data-bid="'+esc(b.id)+'" data-lv="'+l+'" aria-pressed="'+(selMap[b.id]===l)+'" aria-label="'+esc(b.name)+' '+l+'">'+l+'</button>').join('')+
+        '</div></div>';
+    }).join('');
+  }).join('');
+}
+function metaHTML(key){
+  const d=S.drafts[key]; if(!d||!d.text) return '';
+  const bytes=neisBytes(d.text), chars=[...d.text].length, lim=S.settings.limitBytes;
+  const pct=Math.min(100,Math.round(bytes/lim*100));
+  const issues=checkText(key);
+  return '<div class="bar'+(bytes>lim?' over':'')+'"><i style="width:'+pct+'%"></i></div>'+
+    '<div class="metatxt"><span>공백 포함 '+chars+'자</span><span>'+bytes.toLocaleString()+' / '+lim.toLocaleString()+' 바이트</span></div>'+
+    (issues.length?'<ul class="issues">'+issues.map(i=>'<li class="'+(i.bad?'bad':'')+'">'+esc(i.msg)+'</li>').join('')+'</ul>':'<div class="okmsg">점검을 모두 통과했어요</div>');
+}
+function updateMeta(key){
+  document.querySelectorAll('[data-meta]').forEach(el=>{ if(el.dataset.meta===key) el.innerHTML=metaHTML(key); });
+}
+
+/* ---------- 작성 탭 ---------- */
+function studentCard(sport,cl,n){
+  const key=dkey(sport.id,cl,n), d=S.drafts[key]||{sel:{},text:''};
+  const name=(cl.names&&cl.names[n])||'';
+  const chosen=Object.keys(d.sel||{}).map(bid=>{
+    const b=findBehavior(sport,bid); if(!b) return '';
+    return '<span class="chip '+LV_CLS[d.sel[bid]]+'">'+esc(b.name)+' '+d.sel[bid]+'</span>';
+  }).join('');
+  const cnt=Object.keys(d.sel||{}).length;
+  const open=S.ui.open===key;
+  let h='<article class="scard"><div class="shead"><div class="snum">'+n+'</div><div><div class="sname">'+(name?esc(name):n+'번')+'</div>'+
+    '<div class="schips">'+(chosen||'<span class="sub">고른 관찰행동이 없어요</span>')+'</div></div>'+
+    '<div class="sgrow"><button class="btn sm" data-act="toggleOpen" data-key="'+esc(key)+'">'+(open?'접기':'관찰행동 고르기')+'</button>'+
+    (cnt?'<button class="btn sm primary" data-act="genOne" data-key="'+esc(key)+'">'+(d.text?'다시 만들기':'문장 만들기')+'</button>':'')+
+    '</div></div>';
+  if(cnt>3) h+='<div class="hint" style="margin-top:10px">관찰행동이 많으면 글자수 제한을 넘기 쉬워요. 3개 이하를 권장해요.</div>';
+  if(open){
+    h+='<div class="panel">'+matrix(sport,d.sel||{},key)+
+      '<label class="blk" style="margin:16px 0 0">직접 덧붙일 문장 (선택)<input class="inp" data-role="memo" data-key="'+esc(key)+'" value="'+esc(d.memo||'')+'" placeholder="예: 점심시간에도 자율적으로 연습함"></label></div>';
+  }
+  if(d.text){
+    h+='<textarea class="inp out" rows="5" data-role="text" data-key="'+esc(key)+'" aria-label="'+n+'번 세특 문장">'+esc(d.text)+'</textarea>'+
+      '<div class="meta" data-meta="'+esc(key)+'">'+metaHTML(key)+'</div>'+
+      '<div class="actions"><button class="btn sm" data-act="copy" data-key="'+esc(key)+'">복사하기</button>'+
+      '<button class="btn sm ghost" data-act="clearText" data-key="'+esc(key)+'">문장 지우기</button></div>';
+  }
+  return h+'</article>';
+}
+function viewWrite(){
+  if(!S.sports.length) return emptyBlock('등록된 종목이 없어요','문장 DB 탭에서 종목을 추가해 주세요.','<button class="btn primary" data-act="goto" data-tab="db">종목 추가하러 가기</button>');
+  if(!S.classes.length) return emptyBlock('아직 등록된 학급이 없어요','학급을 먼저 등록하면 학년, 반, 번호를 골라 바로 작성할 수 있어요.','<button class="btn primary" data-act="goto" data-tab="classes">학급 등록하기</button>');
+  ensureUI();
+  const sport=getSport(S.ui.sportId), cl=curClass();
+  const grades=[...new Set(S.classes.map(c=>c.grade))].sort((a,b)=>a-b);
+  const clsList=S.classes.filter(c=>c.grade===S.ui.grade).map(c=>c.cls).sort((a,b)=>a-b);
+  const selected=S.ui.selected.filter(n=>n<=cl.count).sort((a,b)=>a-b);
+  let h='<section class="card"><h2>누구의 세특을 쓸까요?</h2>'+
+    '<div class="field"><span class="flabel">종목</span><div class="chips">'+S.sports.map(s=>chip(s.name,s.id===sport.id,'setSport','data-v="'+esc(s.id)+'"')).join('')+'</div></div>'+
+    '<div class="field"><span class="flabel">학년</span><div class="chips">'+grades.map(g=>chip(g+'학년',g===S.ui.grade,'setGrade','data-v="'+g+'"')).join('')+'</div></div>'+
+    '<div class="field"><span class="flabel">반</span><div class="chips">'+clsList.map(c=>chip(c+'반',c===S.ui.cls,'setCls','data-v="'+c+'"')).join('')+'</div></div>'+
+    '<div class="field"><span class="flabel">번호</span><div style="flex:1;min-width:0"><div class="numtools">'+
+    '<button class="btn sm" data-act="selAll">전체 선택</button><button class="btn sm" data-act="selTodo">아직 안 쓴 번호만</button><button class="btn sm ghost" data-act="selNone">선택 해제</button></div>'+
+    '<div class="numgrid">'+Array.from({length:cl.count},(_,i)=>i+1).map(n=>{
+      const k=dkey(sport.id,cl,n), done=S.drafts[k]&&S.drafts[k].text, nm=cl.names&&cl.names[n];
+      return '<button class="num'+(selected.includes(n)?' on':'')+(done?' done':'')+'" data-act="toggleNum" data-n="'+n+'" title="'+esc(nm||'')+'" aria-pressed="'+selected.includes(n)+'">'+n+'</button>';
+    }).join('')+'</div><div class="legend"><span>주황 점은 문장을 이미 만든 번호예요</span></div></div></div></section>';
+
+  if(!selected.length){
+    h+=emptyBlock('번호를 골라 보세요','한 명이든 여러 명이든 괜찮아요. 고른 학생에게 관찰행동을 한 번에 적용할 수 있어요.','',true);
+    return h;
+  }
+  h+='<section class="card"><h2>선택한 '+selected.length+'명에게 한 번에 적용</h2><p class="sub" style="margin-bottom:12px">같은 수업에서 비슷하게 관찰한 학생들을 묶어서 입력하세요. 같은 수준을 다시 누르면 선택이 풀려요.</p>'+
+    matrix(sport,S.ui.bulk,'bulk')+
+    '<div class="legend"><span>상 뛰어남</span><span>중 안정적</span><span>하 성장 중</span></div>'+
+    '<div class="btnrow"><button class="btn primary" data-act="applyBulk">선택한 학생 모두에 적용</button><button class="btn ghost" data-act="clearBulk">고른 내용 비우기</button></div></section>';
+  h+=selected.map(n=>studentCard(sport,cl,n)).join('');
+  return h;
+}
+function dockHTML(){
+  if(S.ui.tab!=='write'||busy||!S.classes.length||!S.sports.length) return '';
+  const cl=curClass(); if(!cl) return '';
+  const sel=S.ui.selected.filter(n=>n<=cl.count);
+  if(!sel.length) return '';
+  const sport=getSport(S.ui.sportId);
+  const ready=sel.filter(n=>{ const d=S.drafts[dkey(sport.id,cl,n)]; return d&&Object.keys(d.sel||{}).length; }).length;
+  return '<div class="dock"><div class="in"><span class="sub">'+sel.length+'명 선택, 관찰행동을 고른 학생은 '+ready+'명이에요</span>'+
+    '<button class="btn primary" data-act="genAll"'+(ready?'':' disabled style="opacity:.5;pointer-events:none"')+'>선택한 학생 문장 만들기</button></div></div>';
+}
+
+/* ---------- 학급 탭 ---------- */
+function viewClasses(){
+  let h='<section class="card"><h2>학급 추가</h2><div class="formrow">'+
+    '<label>학년<select class="inp" id="nc-grade">'+[1,2,3].map(g=>'<option value="'+g+'"'+(g===(S.ui.grade||2)?' selected':'')+'>'+g+'학년</option>').join('')+'</select></label>'+
+    '<label>반<input class="inp" id="nc-cls" type="number" min="1" max="30" value="1"></label>'+
+    '<label>인원수<input class="inp" id="nc-count" type="number" min="1" max="60" value="30"></label>'+
+    '<button class="btn primary" data-act="addClass">추가하기</button></div>'+
+    '<p class="hint" style="margin-top:12px">인원수만 넣어도 번호 선택판이 만들어져요. 이름은 아래에서 원할 때만 입력하세요.</p></section>';
+  if(!S.classes.length) return h+emptyBlock('아직 등록된 학급이 없어요','위에서 학년, 반, 인원수를 넣고 첫 학급을 추가해 보세요.','',true);
+  h+=S.classes.slice().sort((a,b)=>a.grade-b.grade||a.cls-b.cls).map(c=>{
+    const names=Array.from({length:c.count},(_,i)=>(c.names&&c.names[i+1])||'').join('\n');
+    return '<details class="cls" data-did="cl-'+c.id+'"'+(openDB.has('cl-'+c.id)?' open':'')+'><summary><span>'+c.grade+'학년 '+c.cls+'반 <span class="sub">('+c.count+'명)</span></span></summary><div class="dbody">'+
+      '<div class="formrow" style="margin-bottom:14px"><label>인원수<input class="inp" type="number" min="1" max="60" value="'+c.count+'" data-change="setCount" data-id="'+c.id+'"></label>'+
+      '<button class="btn danger sm" data-act="delClass" data-id="'+c.id+'">이 학급 삭제</button></div>'+
+      '<label class="blk">이름 입력 (선택, 한 줄에 한 명, 번호 순서대로)<textarea class="inp" rows="8" data-change="setNames" data-id="'+c.id+'" placeholder="비워 두어도 괜찮아요&#10;1번 이름&#10;2번 이름">'+esc(names)+'</textarea></label>'+
+      '<p class="hint">줄 순서가 곧 번호예요. 이름 없이 번호만 쓰려면 비워 두세요.</p></div></details>';
+  }).join('');
+  h+='<div class="note" style="margin-top:20px">입력한 내용은 이 브라우저 안에만 저장되고 외부로 전송되지 않아요. 공용 컴퓨터에서는 사용 후 백업 파일을 받고 아래 버튼으로 데이터를 지워 주세요.</div>'+
+    '<button class="btn danger sm" data-act="wipe">이 브라우저의 저장 데이터 모두 지우기</button>';
+  return h;
+}
+
+/* ---------- 문장 DB 탭 ---------- */
+const openDB=new Set();
+function behEditor(sid,b){
+  const dn=sid+'::'+b.id;
+  return '<details data-did="'+esc(dn)+'"'+(openDB.has(dn)?' open':'')+'><summary><span>'+esc(b.name)+'</span></summary><div class="dbody">'+
+    '<div class="two"><label class="blk">관찰행동 이름<input class="inp" data-db="beh" data-sid="'+esc(sid)+'" data-bid="'+esc(b.id)+'" data-field="name" value="'+esc(b.name)+'"></label>'+
+    '<label class="blk">활동 장면 (문장 맨 앞에 쓰여요)<input class="inp" data-db="beh" data-sid="'+esc(sid)+'" data-bid="'+esc(b.id)+'" data-field="scene" value="'+esc(b.scene||'')+'"></label></div>'+
+    '<div class="three">'+LEVELS.map(l=>'<label class="blk">수준 '+l+' 표현 (한 줄에 하나)<textarea class="inp" rows="7" data-db="beh" data-sid="'+esc(sid)+'" data-bid="'+esc(b.id)+'" data-field="'+l+'">'+esc((b.acts&&b.acts[l]||[]).join('\n'))+'</textarea></label>').join('')+'</div>'+
+    '<p class="hint">표현은 "~함", "~보임", "~있음"처럼 끝나게 적어 주세요. 연결이 필요할 때 "~하며", "~보이며", "~있으며"로 자동 변환돼요. <span class="code">{종목}</span>을 쓰면 종목 이름으로 바뀌어요.</p>'+
+    '<div class="btnrow"><button class="btn danger sm" data-act="delBeh" data-sid="'+esc(sid)+'" data-bid="'+esc(b.id)+'">이 관찰행동 삭제</button></div></div></details>';
+}
+function viewDB(){
+  const cur=S.ui.dbSport;
+  const isCommon=cur==='common';
+  const sport=getSport(cur);
+  let h='<section class="card"><h2>종목과 관찰행동</h2>'+
+    '<div class="chips" style="margin-bottom:16px">'+S.sports.map(s=>chip(s.name,cur===s.id,'setDbSport','data-v="'+esc(s.id)+'"')).join('')+chip('공통 태도',isCommon,'setDbSport','data-v="common"')+'</div>'+
+    '<div class="formrow" style="margin-bottom:20px"><label>새 종목 이름<input class="inp" id="ns-name" placeholder="예: 풋살"></label><button class="btn primary" data-act="addSport">종목 추가하기</button></div>'+
+    '<p class="hint" style="margin-bottom:20px">새 종목을 추가하면 기본 틀이 함께 만들어져요. 관찰행동과 표현을 종목에 맞게 고쳐 쓰면 됩니다. 공통 태도는 모든 종목에서 함께 쓰여요.</p>';
+  if(!isCommon&&!sport){ return h+'</section>'; }
+  const list=isCommon?S.common:sport.behaviors;
+  h+=list.length?list.map(b=>behEditor(isCommon?'common':sport.id,b)).join(''):emptyBlock('아직 관찰행동이 없어요','아래 버튼으로 첫 관찰행동을 추가해 보세요.','',true);
+  h+='<div class="btnrow"><button class="btn" data-act="addBeh">관찰행동 추가</button>'+
+    (!isCommon?'<button class="btn danger" data-act="delSport">이 종목 삭제</button>':'')+'</div></section>';
+
+  h+='<section class="card"><h2>문장을 만드는 재료</h2>'+
+   '<details data-did="g-conn"'+(openDB.has('g-conn')?' open':'')+'><summary><span>문장 연결어</span></summary><div class="dbody"><textarea class="inp" rows="5" data-db="conn">'+esc(S.connectors.join('\n'))+'</textarea><p class="hint">두 번째 문장부터 앞에 붙어요. 한 줄에 하나씩 적어 주세요.</p></div></details>'+
+   '<details data-did="g-close"'+(openDB.has('g-close')?' open':'')+'><summary><span>마무리 문장</span></summary><div class="dbody"><div class="three">'+LEVELS.map(l=>'<label class="blk">수준 '+l+'<textarea class="inp" rows="6" data-db="closer" data-lv="'+l+'">'+esc((S.closers[l]||[]).join('\n'))+'</textarea></label>').join('')+'</div><p class="hint">마침표까지 포함한 완성된 문장으로 적어 주세요. 관찰행동에서 가장 많이 고른 수준에 맞춰 하나가 선택돼요.</p></div></details>'+
+   '<details data-did="g-tpl"'+(openDB.has('g-tpl')?' open':'')+'><summary><span>문장 틀</span></summary><div class="dbody"><textarea class="inp" rows="5" data-db="tpl">'+esc(S.templates.join('\n'))+'</textarea>'+
+   '<p class="hint">쓸 수 있는 자리: <span class="code">{장면}</span> <span class="code">{A}</span> <span class="code">{A연결}</span> <span class="code">{A고}</span> <span class="code">{B}</span><br><span class="code">{A}</span>와 <span class="code">{B}</span>는 같은 수준에서 무작위로 고른 표현이에요. <span class="code">{B}</span>가 들어간 틀은 표현이 2개 이상일 때만 쓰여요.</p></div></details>'+
+   '</section>';
+
+  h+='<section class="card"><h2>점검과 설정</h2>'+
+   '<div class="three" style="margin-bottom:16px">'+
+   '<label class="blk">글자수 제한 (바이트)<input class="inp" type="number" min="100" step="100" data-db="set" data-field="limitBytes" value="'+S.settings.limitBytes+'"></label>'+
+   '<label class="blk">주어 표기<select class="inp" data-db="set" data-field="subject"><option value="omit"'+(S.settings.subject==='omit'?' selected':'')+'>생략 (권장)</option><option value="name"'+(S.settings.subject==='name'?' selected':'')+'>이름 넣기</option></select></label>'+
+   '<label class="blk">비슷한 문장 기준 (%)<input class="inp" type="number" min="20" max="95" step="5" data-db="set" data-field="simThreshold" value="'+Math.round(S.settings.simThreshold*100)+'"></label></div>'+
+   '<label style="display:flex;gap:10px;align-items:center;margin-bottom:20px;font-weight:600"><input type="checkbox" data-db="set" data-field="includeCloser"'+(S.settings.includeCloser?' checked':'')+'> 문장 끝에 마무리 문장 붙이기</label>'+
+   '<p class="hint" style="margin-bottom:16px">바이트는 한글 3, 영문·숫자·공백 1, 줄바꿈 2로 계산해요. 학교와 항목의 기재요령에 맞춰 조정하세요. 예를 들어 500자 제한이면 1,500바이트예요.</p>'+
+   '<details data-did="g-forbid"'+(openDB.has('g-forbid')?' open':'')+'><summary><span>주의 표현 목록</span></summary><div class="dbody"><textarea class="inp" rows="6" data-db="forbid">'+esc(S.forbidden.join('\n'))+'</textarea><p class="hint">문장에 들어가면 경고로 알려 줘요. 한 줄에 하나씩 적어 주세요.</p></div></details>'+
+   '<details data-did="g-typo"'+(openDB.has('g-typo')?' open':'')+'><summary><span>맞춤법 점검 목록</span></summary><div class="dbody"><textarea class="inp" rows="6" data-db="typo">'+esc(S.typos.join('\n'))+'</textarea><p class="hint">"틀린 표현=바른 표현" 형식으로 한 줄에 하나씩 적어요. 간단한 점검이라, 최종 문장은 맞춤법 검사기로 한 번 더 확인해 주세요.</p></div></details></section>';
+  return h;
+}
+
+/* ---------- 결과 탭 ---------- */
+function entries(){
+  return Object.keys(S.drafts).filter(k=>S.drafts[k].text).map(k=>Object.assign({key:k},parseKey(k))).filter(e=>{
+    if(S.ui.rGrade!=='all'&&(e.grade+'|'+e.cls)!==S.ui.rGrade) return false;
+    if(S.ui.rSport!=='all'&&e.sid!==S.ui.rSport) return false;
+    return true;
+  }).sort((a,b)=>a.grade-b.grade||a.cls-b.cls||a.sid.localeCompare(b.sid)||a.num-b.num);
+}
+function nameOf(e){
+  const cl=S.classes.find(c=>c.grade===e.grade&&c.cls===e.cls);
+  return (cl&&cl.names&&cl.names[e.num])||'';
+}
+function viewResults(){
+  const all=Object.keys(S.drafts).filter(k=>S.drafts[k].text);
+  if(!all.length) return emptyBlock('아직 만든 문장이 없어요','작성 탭에서 학생을 고르고 첫 문장을 만들어 보세요.','<button class="btn primary" data-act="goto" data-tab="write">작성하러 가기</button>');
+  const clsOpts=S.classes.slice().sort((a,b)=>a.grade-b.grade||a.cls-b.cls).map(c=>'<option value="'+c.grade+'|'+c.cls+'"'+(S.ui.rGrade===c.grade+'|'+c.cls?' selected':'')+'>'+c.grade+'학년 '+c.cls+'반</option>').join('');
+  const spOpts=S.sports.map(s=>'<option value="'+esc(s.id)+'"'+(S.ui.rSport===s.id?' selected':'')+'>'+esc(s.name)+'</option>').join('');
+  const list=entries();
+  let h='<div class="toolbar"><select class="inp" data-change="rGrade"><option value="all">모든 학급</option>'+clsOpts+'</select>'+
+    '<select class="inp" data-change="rSport"><option value="all">모든 종목</option>'+spOpts+'</select>'+
+    '<span style="margin-left:auto"></span><button class="btn" data-act="csv">CSV 내려받기</button><button class="btn" data-act="backup">백업 파일 받기</button>'+
+    '<label class="btn" style="cursor:pointer">백업 불러오기<input type="file" accept=".json,application/json" data-change="restore" hidden></label></div>';
+  // 유사 문장
+  const pairs=[];
+  for(let i=0;i<list.length;i++) for(let j=i+1;j<list.length;j++){
+    if(groupOf(list[i].key)!==groupOf(list[j].key)) continue;
+    const s=similarity(S.drafts[list[i].key].text,S.drafts[list[j].key].text);
+    if(s>=S.settings.simThreshold) pairs.push({a:list[i],b:list[j],s});
+  }
+  pairs.sort((x,y)=>y.s-x.s);
+  h+='<section class="card"><h2>비슷한 문장 찾기</h2>'+
+    (pairs.length?pairs.slice(0,12).map(p=>'<div class="pair"><span><b>'+Math.round(p.s*100)+'%</b> '+p.a.num+'번과 '+p.b.num+'번 ('+p.a.grade+'학년 '+p.a.cls+'반)</span><span style="margin-left:auto;display:flex;gap:8px"><button class="btn sm" data-act="genOne" data-key="'+esc(p.a.key)+'">'+p.a.num+'번 다시 만들기</button><button class="btn sm" data-act="genOne" data-key="'+esc(p.b.key)+'">'+p.b.num+'번 다시 만들기</button></span></div>').join(''):'<p class="okmsg" style="margin:0">기준 '+Math.round(S.settings.simThreshold*100)+'%를 넘는 비슷한 문장이 없어요</p>')+
+    '</section>';
+  if(!list.length) return h+emptyBlock('조건에 맞는 문장이 없어요','위의 학급과 종목 선택을 바꿔 보세요.','',true);
+  h+=list.map(e=>{
+    const sp=getSport(e.sid), d=S.drafts[e.key], nm=nameOf(e);
+    const iss=checkText(e.key);
+    const summary=Object.keys(d.sel||{}).map(bid=>{ const b=findBehavior(sp,bid); return b?b.name+' '+d.sel[bid]:''; }).filter(Boolean).join(', ');
+    const bytes=neisBytes(d.text);
+    return '<article class="rrow"><div class="rhead"><span class="rtag">'+e.grade+'학년 '+e.cls+'반 '+e.num+'번</span>'+(nm?'<b>'+esc(nm)+'</b>':'')+'<span class="sub">'+esc(sp?sp.name:'삭제된 종목')+'</span>'+
+      '<span class="sub" style="margin-left:auto">'+bytes.toLocaleString()+'바이트'+(iss.length?', 확인할 점 '+iss.length+'개':'')+'</span></div>'+
+      (summary?'<div class="sub" style="margin-bottom:10px">'+esc(summary)+'</div>':'')+
+      '<p class="rtext">'+esc(d.text)+'</p>'+
+      (iss.length?'<ul class="issues">'+iss.map(i=>'<li class="'+(i.bad?'bad':'')+'">'+esc(i.msg)+'</li>').join('')+'</ul>':'')+
+      '<div class="actions"><button class="btn sm" data-act="copy" data-key="'+esc(e.key)+'">복사하기</button><button class="btn sm ghost" data-act="goEdit" data-key="'+esc(e.key)+'">작성 탭에서 고치기</button><button class="btn sm danger" data-act="delText" data-key="'+esc(e.key)+'">삭제</button></div></article>';
+  }).join('');
+  return h;
+}
+
+/* ---------- 렌더링 ---------- */
+let busy=true;
+const TABS=[['write','작성'],['classes','학급'],['db','문장 DB'],['results','결과 모아보기']];
+function render(){
+  $('#tabs').innerHTML=TABS.map(t=>'<button class="'+(S.ui.tab===t[0]?'on':'')+'" data-act="goto" data-tab="'+t[0]+'">'+t[1]+'</button>').join('');
+  const app=$('#app');
+  if(busy){ app.innerHTML=skeleton(); $('#dockhost').innerHTML=''; return; }
+  const fn={write:viewWrite,classes:viewClasses,db:viewDB,results:viewResults}[S.ui.tab]||viewWrite;
+  app.innerHTML=(storageOK?'':'<div class="banner">이 브라우저에서는 자동 저장을 쓸 수 없어요. 작업 후 꼭 백업 파일을 내려받아 주세요.</div>')+fn();
+  $('#dockhost').innerHTML=dockHTML();
+}
+let toastTimer=null;
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),2200);
+}
+function askConfirm(msg,okLabel){
+  return new Promise(res=>{
+    const o=document.createElement('div'); o.className='overlay';
+    o.innerHTML='<div class="modal" role="dialog" aria-modal="true"><p>'+esc(msg)+'</p><div class="btnrow"><button class="btn" data-x="no">취소</button><button class="btn primary" data-x="ok">'+esc(okLabel||'계속하기')+'</button></div></div>';
+    o.addEventListener('click',e=>{
+      const x=e.target.dataset&&e.target.dataset.x;
+      if(x){ o.remove(); res(x==='ok'); }
+      else if(e.target===o){ o.remove(); res(false); }
+    });
+    document.body.appendChild(o);
+    const ok=o.querySelector('[data-x="ok"]'); if(ok) ok.focus();
+  });
+}
+async function copyText(t){
+  try{ await navigator.clipboard.writeText(t); }
+  catch(e){
+    const ta=document.createElement('textarea'); ta.value=t; ta.style.cssText='position:fixed;opacity:0';
+    document.body.appendChild(ta); ta.select(); try{ document.execCommand('copy'); }catch(_){} ta.remove();
+  }
+  toast('복사했어요');
+}
+function download(name,text,mime){
+  const blob=new Blob([text],{type:mime});
+  const url=URL.createObjectURL(blob), a=document.createElement('a');
+  a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+function csvCell(v){ return '"'+String(v==null?'':v).replace(/"/g,'""')+'"'; }
+function uid(p){ return p+Math.random().toString(36).slice(2,8); }
+
+/* ---------- 이벤트 ---------- */
+async function generateMany(keys){
+  const edited=keys.filter(k=>S.drafts[k].edited&&S.drafts[k].text);
+  if(edited.length&&!(await askConfirm('직접 고친 문장 '+edited.length+'개가 새로 만든 문장으로 바뀌어요. 계속할까요?','바꾸기'))) return;
+  busy=true; render(); await sleep(350);
+  let ok=0; keys.forEach(k=>{ if(generate(k)) ok++; });
+  busy=false; save(); render();
+  toast(ok?ok+'명의 문장을 만들었어요':'문장을 만들지 못했어요. 문장 DB에 표현이 있는지 확인해 주세요');
+}
+document.addEventListener('click',async e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const act=el.dataset.act, ds=el.dataset, u=S.ui;
+  switch(act){
+    case 'goto': u.tab=ds.tab; save(); render(); window.scrollTo(0,0); break;
+    case 'setSport': u.sportId=ds.v; u.open=null; u.bulk={}; save(); render(); break;
+    case 'setGrade': u.grade=+ds.v; u.cls=null; u.selected=[]; u.open=null; ensureUI(); save(); render(); break;
+    case 'setCls': u.cls=+ds.v; u.selected=[]; u.open=null; save(); render(); break;
+    case 'toggleNum': { const n=+ds.n, i=u.selected.indexOf(n); if(i>=0) u.selected.splice(i,1); else u.selected.push(n); save(); render(); break; }
+    case 'selAll': { const cl=curClass(); u.selected=Array.from({length:cl.count},(_,i)=>i+1); save(); render(); break; }
+    case 'selNone': u.selected=[]; u.open=null; save(); render(); break;
+    case 'selTodo': { const cl=curClass(), sp=getSport(u.sportId); u.selected=Array.from({length:cl.count},(_,i)=>i+1).filter(n=>{ const d=S.drafts[dkey(sp.id,cl,n)]; return !(d&&d.text); }); save(); render(); break; }
+    case 'setLevel': {
+      const target=ds.scope==='bulk'?u.bulk:(S.drafts[ds.scope]||(S.drafts[ds.scope]={sel:{},text:'',memo:''})).sel;
+      if(target[ds.bid]===ds.lv) delete target[ds.bid]; else target[ds.bid]=ds.lv;
+      save(); render(); break; }
+    case 'clearBulk': u.bulk={}; save(); render(); break;
+    case 'applyBulk': {
+      if(!Object.keys(u.bulk).length){ toast('먼저 관찰행동과 수준을 골라 주세요'); break; }
+      const cl=curClass(), sp=getSport(u.sportId);
+      u.selected.filter(n=>n<=cl.count).forEach(n=>{
+        const k=dkey(sp.id,cl,n); const d=S.drafts[k]||(S.drafts[k]={sel:{},text:'',memo:''});
+        Object.assign(d.sel,u.bulk);
+      });
+      save(); render(); toast('선택한 학생에게 적용했어요'); break; }
+    case 'toggleOpen': u.open=(u.open===ds.key)?null:ds.key; save(); render(); break;
+    case 'genOne': {
+      const d=S.drafts[ds.key]; if(!d) break;
+      if(d.edited&&d.text&&!(await askConfirm('직접 고친 문장이 새로 만든 문장으로 바뀌어요. 계속할까요?','바꾸기'))) break;
+      const ok=generate(ds.key); save(); render();
+      toast(ok?'문장을 만들었어요':'문장을 만들지 못했어요. 문장 DB를 확인해 주세요'); break; }
+    case 'genAll': {
+      const cl=curClass(), sp=getSport(u.sportId);
+      const keys=u.selected.filter(n=>n<=cl.count).sort((a,b)=>a-b).map(n=>dkey(sp.id,cl,n)).filter(k=>S.drafts[k]&&Object.keys(S.drafts[k].sel||{}).length);
+      if(!keys.length){ toast('관찰행동을 고른 학생이 없어요'); break; }
+      await generateMany(keys); break; }
+    case 'copy': copyText(S.drafts[ds.key].text); break;
+    case 'clearText': { const d=S.drafts[ds.key]; d.text=''; d.edited=false; save(); render(); break; }
+    case 'delText': if(await askConfirm('이 학생의 문장을 삭제할까요?','삭제')){ delete S.drafts[ds.key]; save(); render(); } break;
+    case 'goEdit': { const p=parseKey(ds.key); u.sportId=p.sid; u.grade=p.grade; u.cls=p.cls; u.selected=[p.num]; u.open=ds.key; u.tab='write'; save(); render(); window.scrollTo(0,0); break; }
+    /* 학급 */
+    case 'addClass': {
+      const g=+$('#nc-grade').value, c=+$('#nc-cls').value, n=+$('#nc-count').value;
+      if(!(c>=1)||!(n>=1)){ toast('반과 인원수를 확인해 주세요'); break; }
+      if(S.classes.some(x=>x.grade===g&&x.cls===c)){ toast('이미 등록된 학급이에요'); break; }
+      S.classes.push({id:uid('c'),grade:g,cls:c,count:Math.min(n,60),names:{}});
+      u.grade=g; u.cls=c; u.selected=[]; save(); render(); toast(g+'학년 '+c+'반을 추가했어요'); break; }
+    case 'delClass': {
+      if(!(await askConfirm('이 학급과 학급의 문장을 모두 삭제할까요? 되돌릴 수 없어요.','삭제'))) break;
+      const c=S.classes.find(x=>x.id===ds.id);
+      Object.keys(S.drafts).forEach(k=>{ const p=parseKey(k); if(p.grade===c.grade&&p.cls===c.cls) delete S.drafts[k]; });
+      S.classes=S.classes.filter(x=>x.id!==ds.id); u.selected=[]; u.open=null; save(); render(); break; }
+    case 'wipe':
+      if(await askConfirm('저장된 학급, 문장, DB 수정 내용이 모두 사라져요. 먼저 백업 파일을 받아 두셨나요?','모두 지우기')){
+        try{ localStorage.removeItem(KEY); }catch(_){}
+        S=seed(); busy=false; render(); toast('저장 데이터를 지웠어요');
+      } break;
+    /* DB */
+    case 'setDbSport': u.dbSport=ds.v; save(); render(); break;
+    case 'addSport': {
+      const name=$('#ns-name').value.trim();
+      if(!name){ toast('종목 이름을 입력해 주세요'); break; }
+      if(S.sports.some(s=>s.name===name)){ toast('이미 있는 종목이에요'); break; }
+      const id=uid('sp_');
+      S.sports.push({id,name,behaviors:[{id:uid('b_'),name:'기본 기술',scene:name+' 기본 기술 연습 활동',acts:{
+        '상':['핵심 동작을 정확하게 이해하고 안정적으로 수행함','배운 기술을 경기 상황에 맞게 응용함'],
+        '중':['기본 동작을 익혀 꾸준히 연습함','교사의 시범을 바탕으로 자세를 다듬어 감'],
+        '하':['기본 동작을 차근차근 익혀 가며 연습에 참여함','어려운 동작도 포기하지 않고 여러 번 시도함']}}]});
+      u.dbSport=id; u.sportId=id; save(); render(); toast(name+' 종목을 추가했어요. 표현을 종목에 맞게 고쳐 보세요'); break; }
+    case 'delSport': {
+      const sp=getSport(u.dbSport); if(!sp) break;
+      if(!(await askConfirm('"'+sp.name+'" 종목과 이 종목으로 만든 문장을 모두 삭제할까요?','삭제'))) break;
+      Object.keys(S.drafts).forEach(k=>{ if(parseKey(k).sid===sp.id) delete S.drafts[k]; });
+      S.sports=S.sports.filter(s=>s.id!==sp.id);
+      u.dbSport=S.sports.length?S.sports[0].id:'common'; u.sportId=S.sports.length?S.sports[0].id:''; save(); render(); break; }
+    case 'addBeh': {
+      const nb={id:uid('b_'),name:'새 관찰행동',scene:'{종목} 활동',acts:{'상':[],'중':[],'하':[]}};
+      if(u.dbSport==='common') S.common.push(nb); else getSport(u.dbSport).behaviors.push(nb);
+      openDB.add((u.dbSport==='common'?'common':u.dbSport)+'::'+nb.id); save(); render(); break; }
+    case 'delBeh': {
+      if(!(await askConfirm('이 관찰행동을 삭제할까요?','삭제'))) break;
+      const arr=ds.sid==='common'?S.common:getSport(ds.sid).behaviors;
+      const i=arr.findIndex(b=>b.id===ds.bid); if(i>=0) arr.splice(i,1);
+      Object.keys(S.drafts).forEach(k=>{ delete S.drafts[k].sel[ds.bid]; });
+      save(); render(); break; }
+    /* 결과 */
+    case 'csv': {
+      const rows=[['학년','반','번호','이름','종목','관찰행동','글자수','바이트','세특 문장']];
+      entries().forEach(e=>{
+        const sp=getSport(e.sid), d=S.drafts[e.key];
+        const sm=Object.keys(d.sel||{}).map(bid=>{ const b=findBehavior(sp,bid); return b?b.name+'('+d.sel[bid]+')':''; }).filter(Boolean).join(', ');
+        rows.push([e.grade,e.cls,e.num,nameOf(e),sp?sp.name:'',sm,[...d.text].length,neisBytes(d.text),d.text]);
+      });
+      download('세특_문장.csv','\uFEFF'+rows.map(r=>r.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8'); toast('CSV 파일을 내려받았어요'); break; }
+    case 'backup': download('세특작성기_백업.json',JSON.stringify(S,null,1),'application/json'); toast('백업 파일을 내려받았어요'); break;
+  }
+});
+document.addEventListener('change',async e=>{
+  const t=e.target, ds=t.dataset;
+  if(ds.db){
+    const k=ds.db, v=t.value;
+    if(k==='beh'){
+      const arr=ds.sid==='common'?S.common:(getSport(ds.sid)||{behaviors:[]}).behaviors;
+      const b=arr.find(x=>x.id===ds.bid); if(!b) return;
+      if(LEVELS.includes(ds.field)) b.acts[ds.field]=lines(v).map(x=>x.replace(/\.$/,''));
+      else b[ds.field]=v.trim();
+    }
+    else if(k==='conn') S.connectors=lines(v);
+    else if(k==='closer') S.closers[ds.lv]=lines(v);
+    else if(k==='tpl') S.templates=lines(v);
+    else if(k==='forbid') S.forbidden=lines(v);
+    else if(k==='typo') S.typos=lines(v);
+    else if(k==='set'){
+      if(ds.field==='limitBytes') S.settings.limitBytes=Math.max(100,+v||1500);
+      else if(ds.field==='simThreshold') S.settings.simThreshold=Math.min(0.95,Math.max(0.2,(+v||55)/100));
+      else if(ds.field==='includeCloser') S.settings.includeCloser=t.checked;
+      else S.settings[ds.field]=v;
+    }
+    save(); toast('저장했어요'); return;
+  }
+  if(ds.change==='setCount'){
+    const c=S.classes.find(x=>x.id===ds.id); const n=Math.min(60,Math.max(1,+t.value||1)); c.count=n;
+    Object.keys(c.names||{}).forEach(k=>{ if(+k>n) delete c.names[k]; });
+    S.ui.selected=S.ui.selected.filter(x=>x<=n); openDB.add('cl-'+c.id); save(); render(); toast('인원수를 바꿨어요');
+  } else if(ds.change==='setNames'){
+    const c=S.classes.find(x=>x.id===ds.id); const arr=t.value.split('\n'); c.names={};
+    for(let i=0;i<Math.min(arr.length,c.count);i++){ const nm=arr[i].trim(); if(nm) c.names[i+1]=nm; }
+    save(); toast('이름을 저장했어요');
+  } else if(ds.change==='rGrade'){ S.ui.rGrade=t.value; save(); render(); }
+  else if(ds.change==='rSport'){ S.ui.rSport=t.value; save(); render(); }
+  else if(ds.change==='restore'){
+    const f=t.files&&t.files[0]; if(!f) return;
+    try{
+      const obj=JSON.parse(await f.text());
+      if(!Array.isArray(obj.sports)||!Array.isArray(obj.classes)) throw new Error('bad');
+      if(!(await askConfirm('현재 저장된 내용이 백업 파일의 내용으로 바뀌어요. 계속할까요?','불러오기'))) return;
+      const d=seed(); Object.keys(d).forEach(k=>{ if(obj[k]===undefined) obj[k]=d[k]; });
+      S=obj; save(); render(); toast('백업을 불러왔어요');
+    }catch(_){ toast('백업 파일을 읽지 못했어요'); }
+  } else if(ds.role==='memo'){
+    const d=S.drafts[ds.key]; if(d){ d.memo=t.value; save(); }
+  }
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.dataset&&t.dataset.role==='text'){
+    const d=S.drafts[t.dataset.key]; if(!d) return;
+    d.text=t.value; d.edited=true; saveSoon(); updateMeta(t.dataset.key);
+  }
+});
+document.addEventListener('toggle',e=>{
+  const el=e.target; if(!el.dataset||!el.dataset.did) return;
+  if(el.open) openDB.add(el.dataset.did); else openDB.delete(el.dataset.did);
+},true);
+
+/* ---------- 시작 ---------- */
+if(!getSport(S.ui.dbSport)&&S.ui.dbSport!=='common') S.ui.dbSport=S.sports.length?S.sports[0].id:'common';
+render();
+setTimeout(()=>{ busy=false; render(); },450);
+
+/* 테스트용 노출 */
+window.__setuk={toConn:toConn,neisBytes:neisBytes,state:()=>S};
+})();
+</script>
+</body>
+</html>
